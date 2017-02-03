@@ -3,18 +3,18 @@ kind: Service
 metadata:
   name: kong-proxy
 spec:
-  type: LoadBalancer
-  loadBalancerSourceRanges:
-  - 0.0.0.0/0
+  type: NodePort
   ports:
   - name: kong-proxy
     port: 8000
     targetPort: 8000
     protocol: TCP
+    nodePort: 30008
   - name: kong-proxy-ssl
     port: 8443
     targetPort: 8443
     protocol: TCP
+    nodePort: 30009
   selector:
     app: kong
 
@@ -24,14 +24,13 @@ kind: Service
 metadata:
   name: kong-admin
 spec:
-  type: LoadBalancer
-  loadBalancerSourceRanges:
-  - 0.0.0.0/0
+  type: NodePort
   ports:
   - name: kong-admin
     port: 8001
     targetPort: 8001
     protocol: TCP
+    nodePort: 30001
   selector:
     app: kong
 
@@ -53,9 +52,7 @@ spec:
         image: mashape/kong:cassandra3
         env:
           - name: KONG_DATABASE
-            value: cassandra
-          - name: KONG_CASSANDRA_CONTACT_POINTS
-            value: cassandra.default.svc.cluster.local
+            value: postgres
           - name: KONG_PG_USER
             value: kong
           - name: KONG_PG_DATABASE
@@ -68,10 +65,6 @@ spec:
             value: 10.100.0.10
           - name: KONG_DNSMASQ
             value: "off"
-          - name: KONG_CASSANDRA_KEYSPACE
-            value: kong
-          - name: KONG_CASSANDRA_REPL_FACTOR
-            value: "2"
         ports:
         - name: admin
           containerPort: 8001
