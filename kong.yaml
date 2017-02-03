@@ -35,8 +35,6 @@ spec:
     nodePort: 30001
   selector:
     app: kong
-  externalIPs:
-    - 147.162.226.101
 
 ---
 apiVersion: extensions/v1beta1
@@ -44,7 +42,7 @@ kind: Deployment
 metadata:
   name: kong-rc
 spec:
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
